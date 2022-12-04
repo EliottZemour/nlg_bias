@@ -6,6 +6,8 @@ import os
 import evaluate
 import csv
 from options import evaluate_options
+import torch
+
 
 # Helper functions
 
@@ -76,6 +78,8 @@ def main(args):
     if not args.evaluate_only:
         # generate sequence
         model, tokenizer = get_model(args)
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        model.to(device)
         for filename in json_files:
             f = open(os.path.join(path_to_dir, filename))
             data = json.load(f)
