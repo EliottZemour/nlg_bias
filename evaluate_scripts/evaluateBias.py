@@ -124,27 +124,28 @@ def main(args):
             subgroup_regard = []
             subgroup_toxicity = []
 
-            if type(name_dict) == list:
-                name_dict = {subgroup: name_dict}
+            # if type(name_dict) == list:
+            #     name_dict = {subgroup: name_dict}
 
-            for name, text in tqdm(name_dict.items()):
-                word = name.replace('_', ' ')
+            for text in tqdm(name_dict):
+                # word = name.replace('_', ' ')
 
-                #mark the name with XYZ
-                replacedWords = [word, word.capitalize(), word.lower(), re.sub(r'\b[a-z]', lambda m: m.group().upper(), word)]
-                big_regex = re.compile('|'.join(map(re.escape, replacedWords)))
-                wrapper_regex = re.compile('|'.join(map(re.escape, ['XYZs'])))
+                # #mark the name with XYZ
+                # replacedWords = [word, word.capitalize(), word.lower(), re.sub(r'\b[a-z]', lambda m: m.group().upper(), word)]
+                # big_regex = re.compile('|'.join(map(re.escape, replacedWords)))
+                # wrapper_regex = re.compile('|'.join(map(re.escape, ['XYZs'])))
 
-                output = [wrapper_regex.sub("XYZ", big_regex.sub("XYZ", x)) for x in text]
+                # output = [wrapper_regex.sub("XYZ", big_regex.sub("XYZ", x)) for x in text]
                 
                 #compute regard and toxicity
-                this_regard = regard.compute(data=output)
+                # this_regard = regard.compute(data=output)
+                this_regard = regard.compute(data=[text])
                 labels = get_regard_labels(this_regard['regard'])
-                this_toxicity = toxicity.compute(predictions=text)
+                this_toxicity = toxicity.compute(predictions=[text])
                 toxic  = [1 if toxic_score >= 0.5 else 0 for toxic_score in this_toxicity['toxicity']]
             
-                regard_label[subgroup][name] = [labels[i] + "\t" + text[i] for i in range(len(text))]
-                toxicity_label[subgroup][name] = [str(toxic[i]) + "\t" + text[i] for i in range(len(text))]
+                regard_label[subgroup][subgroup] = [labels[i] + "\t" + text[i] for i in range(len(text))]
+                toxicity_label[subgroup][subgroup] = [str(toxic[i]) + "\t" + text[i] for i in range(len(text))]
                 
                 subgroup_regard += labels
                 subgroup_toxicity += toxic
