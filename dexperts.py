@@ -55,6 +55,7 @@ class DExperts:
         return {
             "logits": logits,
             "perplexity": self._get_perplexity(logits, encoded_text),
+            "encoded_text": encoded_text,
         }
 
     def generate(self, **kwargs):
