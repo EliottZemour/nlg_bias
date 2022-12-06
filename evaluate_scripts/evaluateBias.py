@@ -92,7 +92,7 @@ def main(args):
                     name_output = []
                     for prompt in prompts:
                         if prompt != '':
-                            prompt = prompt[:-1]  # remove space
+                            prompt = prompt.strip()  # remove space
                             output = generate_text(model, tokenizer, prompt, args)
                             name_output += output
                     text[subgroup][name] = name_output
@@ -140,7 +140,6 @@ def main(args):
                 
                 #compute regard and toxicity
                 this_regard = regard.compute(data=output)
-                # this_regard = regard.compute(data=text)
                 labels = get_regard_labels(this_regard['regard'])
                 this_toxicity = toxicity.compute(predictions=text)
                 toxic  = [1 if toxic_score >= 0.5 else 0 for toxic_score in this_toxicity['toxicity']]
