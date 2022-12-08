@@ -89,10 +89,17 @@ class DExperts:
         logits = self._get_logits(encoded_text, alpha=alpha)
         return self._get_perplexity(logits, encoded_text)
 
-    def _get_perplexity(self, logits, labels):
+    def _get_perplexity(self, logits, labels, exp=True):
+        # Shift so that tokens < n predict n
+        shift_logits = logits[..., :-1, :].contiguous()
+        shift_labels = labels[..., 1:].contiguous()
         loss_fct = CrossEntropyLoss()
-        loss = loss_fct(logits.view(-1, logits.size(-1)), labels.view(-1))
-        return torch.exp(loss)
+        # loss = loss_fct(logits.view(-1, logits.size(-1)), labels.view(-1))
+        loss = loss_fct(shift_logits.view(-1, shift_logits.size(-1)), shift_labels.view(-1))
+        if exp:
+            return torch.exp(loss)
+        else:
+            return loss
 
     def forward(self, prompt: str, max_length: int = 20, alpha: float = None):
         if alpha is None:
