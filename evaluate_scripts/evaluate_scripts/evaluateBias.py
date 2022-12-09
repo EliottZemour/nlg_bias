@@ -3,9 +3,12 @@ import re
 from tqdm import tqdm
 import json
 import os
-import evaluate
+# import evaluate
 import csv
 from options import evaluate_options
+import torch 
+from toxicity.toxicity import ToxicityClassifier
+from regard.regard import RegardClassifier
 
 # Helper functions
 
@@ -49,8 +52,8 @@ def get_model(args):
         return model, tokenizer
 
 
-def generate_text(model, tokenizer, prompt, args):
-    inputs = tokenizer(prompt, return_tensors='pt')
+def generate_text(model, tokenizer, prompt, device, args):
+    inputs = tokenizer(prompt, return_tensors='pt').to(device)
     out = model.generate(
         input_ids=inputs.input_ids,
         attention_mask=inputs.attention_mask,
@@ -66,6 +69,8 @@ def generate_text(model, tokenizer, prompt, args):
 
 
 def main(args):
+    device = "cuda:0" if torch.cuda.is_available() else "cpu"
+
     # check whether the prompts path is valid
     path_to_dir = os.path.relpath(args.prompt_dir)
     assert os.path.isdir(path_to_dir), "The prompt directory is invalid"
@@ -74,8 +79,12 @@ def main(args):
     json_files = [pos_json for pos_json in os.listdir(path_to_dir) if pos_json.endswith('.json')]
 
     if not args.evaluate_only:
+        
         # generate sequence
         model, tokenizer = get_model(args)
+        model = model.to(device)
+        tokenizer = tokenizer
+
         for filename in json_files:
             f = open(os.path.join(path_to_dir, filename))
             data = json.load(f)
@@ -87,9 +96,10 @@ def main(args):
                 for name, prompts in data[subgroup].items():
                     name_output = []
                     for prompt in prompts:
-                        prompt = prompt[:-1]  # remove space
-                        output = generate_text(model, tokenizer, prompt, args)
-                        name_output += output
+                        if prompt != "":
+                            prompt = prompt[:-1] # remove space
+                            output = generate_text(model, tokenizer, prompt, device, args)
+                            name_output += output
                     text[subgroup][name] = name_output
         
             with open(os.path.join(args.out_dir, args.model + '_' + filename), "w") as outfile:
@@ -100,8 +110,11 @@ def main(args):
         json_files = [pos_json for pos_json in os.listdir(path_to_dir) if pos_json.endswith('.json')]
 
     # load regard and toxicity model
-    regard = evaluate.load("regard")
-    toxicity = evaluate.load("toxicity", module_type="measurement")
+    regard = RegardClassifier(device=device)
+    toxicity = ToxicityClassifier(device=device)
+
+    # regard = evaluate.load("regard")
+    # toxicity = evaluate.load("toxicity", module_type="measurement")
     for filename in json_files:
         f = open(os.path.join(path_to_dir, filename))
 
@@ -157,19 +170,19 @@ def main(args):
                 'score': round(toxic_proportions, 4)})
 
         #make directory if it doesn't exist
-        os.makedirs(os.path.join(args.out_dir, 'regard'), exist_ok=True)
-        os.makedirs(os.path.join(args.out_dir, 'toxicity'), exist_ok=True)
-        os.makedirs(os.path.join(args.out_dir, 'score'), exist_ok=True)
+        os.makedirs(os.path.join(path_to_dir, 'regard'), exist_ok=True)
+        os.makedirs(os.path.join(path_to_dir, 'toxicity'), exist_ok=True)
+        os.makedirs(os.path.join(path_to_dir, 'score'), exist_ok=True)
 
         #save results to files
-        with open(os.path.join(args.out_dir, 'regard',  filename), "w") as outfile:
+        with open(os.path.join(path_to_dir, 'regard',  filename), "w") as outfile:
                 json.dump(regard_label, outfile)
-        with open(os.path.join(args.out_dir, 'toxicity',  filename), "w") as outfile:
+        with open(os.path.join(path_to_dir, 'toxicity',  filename), "w") as outfile:
                 json.dump(toxicity_label, outfile)
 
         field_names = ['model', 'group', 'subgroup', 'metric', 'score']
     
-        with open(os.path.join(args.out_dir, 'score',  filename.replace('.json','.csv')), "w") as csvfile:
+        with open(os.path.join(path_to_dir, 'score',  filename.replace('.json','.csv')), "w") as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames = field_names)
             writer.writeheader()
             writer.writerows(out_csv)
