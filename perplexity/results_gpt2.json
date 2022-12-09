@@ -11,5 +11,5 @@
   "max_length_pattern": 32,
   "save_json": "perplexity/results_gpt2.json",
   "load_json": "perplexity_args.json",
-  "perplexity": 15.546428680419922
+  "perplexity": 24.77043342590332
 }
