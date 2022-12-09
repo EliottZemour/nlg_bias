@@ -19,6 +19,7 @@ class DExperts:
         antiexpert_model: Union[str, Path, AutoModelForCausalLM] = None,
         expert_model: Union[str, Path, AutoModelForCausalLM] = None,
         tokenizer: str = "gpt2",
+        alpha: float = 2.0,
         seed: int = 42,
     ):
         # Set up device
@@ -45,6 +46,18 @@ class DExperts:
         self.tokenizer.pad_token = self.tokenizer.eos_token
         assert self.tokenizer.eos_token_id == self.tokenizer.pad_token_id
 
+        self.alpha = alpha
+        self.logits_processor = LogitsProcessorList(
+            [
+                DexpertsLogitsWarper(
+                    expert_model=expert_model,
+                    anti_expert_model=antiexpert_model,
+                    alpha=self.alpha,
+                    device=self.device,
+                )
+            ]
+        )
+
     def __call__(self, prompt: str, alpha: float = 2.0):
         encodings_dict = self.tokenizer(
             prompt, return_tensors="pt", padding=True, return_attention_mask=True
@@ -55,48 +68,53 @@ class DExperts:
         return {
             "logits": logits,
             "perplexity": self._get_perplexity(logits, encoded_text),
+            "encoded_text": encoded_text,
         }
 
     def generate(self, **kwargs):
-        logits_processor = LogitsProcessorList(
-            [
-                DexpertsLogitsWarper(
-                    expert_model=self.expert.name_or_path,
-                    anti_expert_model=self.antiexpert.name_or_path,
-                    alpha=2.0,
-                    device=self.device,
-                )
-            ]
-        )
         return self.base_model.generate(
-            logits_processor=logits_processor,
+            logits_processor=self.logits_processor,
             pad_token_id=self.tokenizer.eos_token_id,
             **kwargs,
         )
 
-    def compute_perplexity(self, prompt: str, alpha: float = 2.0):
+    def compute_perplexity(self, prompt: str, alpha: float = None):
         encodings_dict = self.tokenizer(
             prompt, return_tensors="pt", padding=True, return_attention_mask=True
         ).to(self.device)
         encoded_text = encodings_dict["input_ids"]
         attn_mask = encodings_dict["attention_mask"]
+        if alpha is None:
+            alpha = self.alpha
         logits = self._get_logits(encoded_text, alpha=alpha)
         return self._get_perplexity(logits, encoded_text)
 
-    def _get_perplexity(self, logits, labels):
+    def _get_perplexity(self, logits, labels, exp=True):
+        # Shift so that tokens < n predict n
+        shift_logits = logits[..., :-1, :].contiguous()
+        shift_labels = labels[..., 1:].contiguous()
         loss_fct = CrossEntropyLoss()
-        loss = loss_fct(logits.view(-1, logits.size(-1)), labels.view(-1))
-        return torch.exp(loss)
+        # loss = loss_fct(logits.view(-1, logits.size(-1)), labels.view(-1))
+        loss = loss_fct(shift_logits.view(-1, shift_logits.size(-1)), shift_labels.view(-1))
+        if exp:
+            return torch.exp(loss)
+        else:
+            return loss
 
-    def forward(self, prompt: str, max_length: int = 20, alpha: float = 2.0):
+    def forward(self, prompt: str, max_length: int = 20, alpha: float = None):
+        if alpha is None:
+            alpha = self.alpha
         return self(prompt, max_length=max_length, alpha=alpha)
 
-    def _get_logits(self, encodings_dict, alpha=2.0):
+    def _get_logits(self, encodings_dict, alpha=None):
         self.base_model.eval()
         if self.expert:
             self.expert.eval()
         if self.antiexpert:
             self.antiexpert.eval()
+
+        if alpha is None:
+            alpha = self.alpha
 
         with torch.no_grad():
             # base model prediction
