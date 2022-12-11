@@ -58,7 +58,7 @@ class DExperts:
             ]
         )
 
-    def __call__(self, prompt: str, alpha: float = 2.0):
+    def __call__(self, prompt: str, alpha: float = None):
         encodings_dict = self.tokenizer(
             prompt, return_tensors="pt", padding=True, return_attention_mask=True
         ).to(self.device)
