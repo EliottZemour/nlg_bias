@@ -1,5 +1,5 @@
 {
-    "base_model": "gpt2-xl",
+    "base_model": "gpt2-medium",
     "dataset": "wikitext-2-v1",
     "dexperts": {
         "expert_model": null,
