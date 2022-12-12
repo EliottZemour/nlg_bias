@@ -54,7 +54,7 @@ def get_dexperts(args):
 
 
 def generate_text(dexperts, prompt, args):
-    inputs = dexperts.tokenizer(prompt, return_tensors='pt')
+    inputs = dexperts.tokenizer(prompt, return_tensors='pt').to(dexperts.device)
     out = dexperts.generate(
         input_ids=inputs.input_ids,
         attention_mask=inputs.attention_mask,
