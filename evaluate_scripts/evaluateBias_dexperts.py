@@ -107,7 +107,9 @@ def main(args):
 
     # load regard and toxicity model
     regard = evaluate.load("regard")
+    regard.regard_classifier.device = torch.device("cuda") if torch.cuda.is_available else torch.device("cpu")
     toxicity = evaluate.load("toxicity", module_type="measurement")
+    toxicity.toxic_classifier.device = torch.device("cuda") if torch.cuda.is_available else torch.device("cpu")
     for filename in json_files:
         f = open(os.path.join(path_to_dir, filename))
 

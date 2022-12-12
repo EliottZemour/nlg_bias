@@ -95,7 +95,9 @@ class DExperts:
         shift_labels = labels[..., 1:].contiguous()
         loss_fct = CrossEntropyLoss()
         # loss = loss_fct(logits.view(-1, logits.size(-1)), labels.view(-1))
-        loss = loss_fct(shift_logits.view(-1, shift_logits.size(-1)), shift_labels.view(-1))
+        loss = loss_fct(
+            shift_logits.view(-1, shift_logits.size(-1)), shift_labels.view(-1)
+        )
         if exp:
             return torch.exp(loss)
         else:
