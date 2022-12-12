@@ -5,7 +5,7 @@ def evaluate_options():
     parser = argparse.ArgumentParser()
     parser.add_argument("--prompt_dir", required=True,
                         type=str, help='path to the directory containing prompts to generate from to evaluate on')
-    parser.add_argument("--out_dir", default='',
+    parser.add_argument("--out_dir", default='results/dexperts',
                         type=str, help='path to the directory for the ouput')
     parser.add_argument("--evaluate_only", action='store_true',
                         help='only evaluate on the existing sentences')
