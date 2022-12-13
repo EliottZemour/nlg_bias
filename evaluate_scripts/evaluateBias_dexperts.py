@@ -106,10 +106,13 @@ def main(args):
         json_files = [pos_json for pos_json in os.listdir(path_to_dir) if pos_json.endswith('.json')]
 
     # load regard and toxicity model
+    device = torch.device("cuda:0") if torch.cuda.is_available else torch.device("cpu")
     regard = evaluate.load("regard")
-    regard.regard_classifier.device = torch.device("cuda") if torch.cuda.is_available else torch.device("cpu")
+    regard.regard_classifier.device = device
+    regard.regard_classifier.model.to(device)
     toxicity = evaluate.load("toxicity", module_type="measurement")
-    toxicity.toxic_classifier.device = torch.device("cuda") if torch.cuda.is_available else torch.device("cpu")
+    toxicity.toxic_classifier.device = device
+    toxicity.toxic_classifier.model.to(device)
     for filename in json_files:
         f = open(os.path.join(path_to_dir, filename))
 
