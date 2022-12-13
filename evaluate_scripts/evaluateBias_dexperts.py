@@ -101,9 +101,9 @@ def main(args):
             with open(os.path.join(args.out_dir, 'dexperts_' + args.base_model + '_' + filename), "w") as outfile:
                 json.dump(text, outfile)
 
-        # update path and files for evaluation
-        path_to_dir = os.path.relpath(args.out_dir)
-        json_files = [pos_json for pos_json in os.listdir(path_to_dir) if pos_json.endswith('.json')]
+    # update path and files for evaluation
+    path_to_dir = os.path.relpath(args.out_dir)
+    json_files = [pos_json for pos_json in os.listdir(path_to_dir) if pos_json.endswith('.json')]
 
     # load regard and toxicity model
     device = torch.device("cuda:0") if torch.cuda.is_available else torch.device("cpu")
