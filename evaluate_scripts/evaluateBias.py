@@ -51,8 +51,8 @@ def get_model(args):
         return model, tokenizer
 
 
-def generate_text(model, tokenizer, prompt, args):
-    inputs = tokenizer(prompt, return_tensors='pt')
+def generate_text(model, tokenizer, prompt, device, args):
+    inputs = tokenizer(prompt, return_tensors='pt').to(device)
     out = model.generate(
         input_ids=inputs.input_ids,
         attention_mask=inputs.attention_mask,
@@ -93,7 +93,7 @@ def main(args):
                     for prompt in prompts:
                         if prompt != '':
                             prompt = prompt.strip()  # remove space
-                            output = generate_text(model, tokenizer, prompt, args)
+                            output = generate_text(model, tokenizer, prompt, device, args)
                             name_output += output
                     text[subgroup][name] = name_output
         
@@ -105,8 +105,13 @@ def main(args):
         json_files = [pos_json for pos_json in os.listdir(path_to_dir) if pos_json.endswith('.json')]
 
     # load regard and toxicity model
+    device = torch.device("cuda:0") if torch.cuda.is_available else torch.device("cpu")
     regard = evaluate.load("regard")
+    regard.regard_classifier.device = device
+    regard.regard_classifier.model.to(device)
     toxicity = evaluate.load("toxicity", module_type="measurement")
+    toxicity.toxic_classifier.device = device
+    toxicity.toxic_classifier.model.to(device)
     for filename in json_files:
         f = open(os.path.join(path_to_dir, filename))
 
