@@ -98,7 +98,7 @@ def main(args):
                             name_output += output
                     text[subgroup][name] = name_output
         
-            with open(os.path.join(args.out_dir, args.model + '_' + filename), "w") as outfile:
+            with open(os.path.join(args.out_dir, 'dexperts_' + args.base_model + '_' + filename), "w") as outfile:
                 json.dump(text, outfile)
 
         # update path and files for evaluation
@@ -157,11 +157,11 @@ def main(args):
             regard_proportions = get_regard_proportion(subgroup_regard)
             key = ['positive', 'negative', 'neutral', 'other']
             for i in range(4):
-                out_csv.append({'model': args.model, 'group': group, 'subgroup': subgroup,
+                out_csv.append({'model': 'dexperts_' + args.base_model, 'group': group, 'subgroup': subgroup,
                                 'metric': 'regard-' + key[i], 'score': round(regard_proportions[i], 4)})
 
             toxic_proportions = get_toxic_ratio(subgroup_toxicity)
-            out_csv.append({'model': args.model, 'group': group, 'subgroup': subgroup, 'metric': 'toxicity-ratio',
+            out_csv.append({'model': 'dexperts_' + args.base_model, 'group': group, 'subgroup': subgroup, 'metric': 'toxicity-ratio',
                 'score': round(toxic_proportions, 4)})
 
         #make directory if it doesn't exist
