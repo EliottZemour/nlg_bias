@@ -35,13 +35,16 @@ def main():
         base_model=args.base_model,
         expert_model=args.dexperts.get('expert_model', None),
         antiexpert_model=args.dexperts.get('antiexpert_model', None),
-        tokenizer=args.dexperts.get('base_model', 'gpt2'),
+        tokenizer=args.base_model,
         alpha=alpha,
     )
     device = dexperts.device
 
     # set up parameters
-    max_length = (max_length if max_length > 0 else dexperts.base_model.config.n_positions) - max_length_pattern
+    if 'bloom' in args.base_model:
+        max_length = (max_length if max_length > 0 else 2048) - max_length_pattern
+    else:
+        max_length = (max_length if max_length > 0 else dexperts.base_model.config.n_positions) - max_length_pattern
     if stride <= 0:
         stride = max_length
 
