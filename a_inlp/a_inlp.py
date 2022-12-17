@@ -252,6 +252,8 @@ def generate_sentences(prompt, tokenizer, model, embedding, P, device, method, a
                         else:
                             ratio[ii] = max(1 - abs(bias), 0.6)
 
+                        print(ratio[ii])
+
                 outputs_P = model.transformer(input_ids=input_ids)[0][:, -1].cpu().detach().numpy()  # transformer output: (2, batch, len, dim), output_P: (batch, dim)
                 outputs_P = np.multiply(np.array([1-ratio[ii] for ii in range(batch_size)]).reshape(-1, 1), outputs_P.dot(P)) + \
                             np.multiply(np.array([ratio[ii] for ii in range(batch_size)]).reshape(-1, 1), outputs_P)
