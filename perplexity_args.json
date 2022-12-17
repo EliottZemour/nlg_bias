@@ -1,5 +1,5 @@
 {
-    "base_model": "bigscience/bloom-1b1",
+    "base_model": "eliolio/gpt2-finetuned-reddit-antibias",
     "dataset": "wikitext-2-v1",
     "dexperts": {
         "expert_model": null,

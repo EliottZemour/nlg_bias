@@ -1,0 +1,15 @@
+{
+  "base_model": "bigscience/bloom-560m",
+  "dataset": "wikitext-2-v1",
+  "dexperts": {
+    "expert_model": null,
+    "antiexpert_model": null,
+    "alpha": 2.0
+  },
+  "stride": -1,
+  "max_length": -1,
+  "max_length_pattern": 32,
+  "save_json": "perplexity/results_bloom560mbis.json",
+  "load_json": "perplexity_args.json",
+  "perplexity": 21.957157135009766
+}

@@ -1,0 +1,15 @@
+{
+  "base_model": "eliolio/gpt2-finetuned-redditbias",
+  "dataset": "wikitext-2-v1",
+  "dexperts": {
+    "expert_model": null,
+    "antiexpert_model": null,
+    "alpha": 2.0
+  },
+  "stride": -1,
+  "max_length": -1,
+  "max_length_pattern": 32,
+  "save_json": "perplexity/results_gpt2redditbias.json",
+  "load_json": "perplexity_args.json",
+  "perplexity": 50.37636184692383
+}
