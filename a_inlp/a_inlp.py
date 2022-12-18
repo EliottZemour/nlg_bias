@@ -3,6 +3,7 @@
 import numpy as np
 import torch
 from torch.nn import functional as F
+from torch.nn import CrossEntropyLoss
 import scipy.stats
 import time
 import random
@@ -26,6 +27,41 @@ from transformers import (
     XLNetLMHeadModel,
     XLNetTokenizer,
 )
+
+def encode_inlp(text, model, tokenizer, embedding, P, alpha, device='cpu'):
+    # Get input ids, logits, and attention mask
+    input_ids = tokenizer.encode(text, return_tensors='pt').to(device)
+    outputs = model.transformer(input_ids=input_ids)[0].cpu().detach().numpy()
+    outputs_P = P.dot(outputs[0].T).T
+    outputs_P = (1 - alpha) * outputs_P + alpha * outputs
+    new_logits = outputs_P.dot(np.transpose(embedding))     # batch * vocab
+    new_logits = torch.from_numpy(new_logits).float()
+    new_logits = new_logits.to(device)
+
+    return {
+        'input_ids': input_ids,
+        'logits': new_logits,
+    }
+
+def perplexity_inlp(text, model, tokenizer, embedding, P, alpha, exp=True, device='cpu'):
+    encoding_dict = encode_inlp(text, model, tokenizer, embedding, P, alpha, device)
+    logits = encoding_dict['logits']
+    input_ids = encoding_dict['input_ids']
+    return get_perplexity(logits, input_ids, exp=exp)
+
+def get_perplexity(logits, labels, exp=True):
+    # Shift so that tokens < n predict n
+    shift_logits = logits[..., :-1, :].contiguous()
+    shift_labels = labels[..., 1:].contiguous()
+    loss_fct = CrossEntropyLoss()
+    # loss = loss_fct(logits.view(-1, logits.size(-1)), labels.view(-1))
+    loss = loss_fct(
+        shift_logits.view(-1, shift_logits.size(-1)), shift_labels.view(-1)
+    )
+    if exp:
+        return torch.exp(loss)
+    else:
+        return loss
 
 def postprocess_next_token_scores(
         self,

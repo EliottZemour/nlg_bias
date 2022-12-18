@@ -28,3 +28,4 @@ def evaluate_options():
     opt = parser.parse_args()
     return opt
 
+# CUDA_VISIBLE_DEVICES=1 nohup python -u evaluateBias_inlp.py --prompt_dir ../prompts/ --out_dir results/gpt2_ainlp > inlp.log &
