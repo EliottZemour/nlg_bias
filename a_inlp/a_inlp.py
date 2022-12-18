@@ -155,7 +155,7 @@ def drop(u, v):
 p = 0.7  # used for top k filtering
 nums_iter = 1
 do_sample = True
-max_len = 30
+max_len = 15
 no_repeat_ngram_size = 3
 bad_words_ids = None
 min_len = 0
@@ -163,11 +163,160 @@ repetition_penalty = 1.0
 batch_size = 1
 eos_token_id = 50256 # model.config.eos_token_id
 pad_token_id = eos_token_id
-temperature = 1.0
-top_k = 0
-top_p = 0.9
+
 bias_thre = (0.15, -0.1)
 
+def generate_inlp(prompt, tokenizer, model, embedding, P, device, alpha=1.0, num_return_sequences=1, max_new_tokens=15, temperature=1.0, top_k=0, top_p=0.9):
+    gender_direction = np.load("/Users/eliott/Desktop/bias-free-nlg/a_inlp/data/bias_subspace/gpt2_gender_direction.npy")
+    batch_size = num_return_sequences
+    temperature = 1.0
+    top_k = 0
+    top_p = 0.9 
+    generated_sentences = []
+
+    input_ids = tokenizer.encode(prompt, add_special_tokens=False, return_tensors="pt")
+    input_list = input_ids.cpu().detach().numpy().tolist()[0]
+    input_lists = [input_list] * batch_size
+    input_ids = torch.LongTensor(input_lists)       # [nums, len_template]
+    input_ids = input_ids.to(device)
+
+    cur_len = input_ids.shape[-1]
+    max_len = cur_len + max_new_tokens
+
+    past, attention_mask, use_cache = None, input_ids.new_ones(input_ids.shape), True
+    unfinished_sents = input_ids.new(batch_size).fill_(1)
+    sent_lengths = input_ids.new(batch_size).fill_(max_len)
+
+    out = None
+
+    while cur_len < max_len:
+        model_inputs = model.prepare_inputs_for_generation(input_ids, past=past, attention_mask=attention_mask,
+                                                            use_cache=use_cache)
+
+        outputs = model(**model_inputs)     # [0]: (batch_size, seq_len, vocab_size)
+
+        # out is used to calculate ppl
+        if out is None:     # (batch, pos, dim)
+            out = outputs[0][:, -1:, :].clone()      # embedding of last token
+        else:
+            out = torch.cat((out, outputs[0][:, -1:, :].clone()), 1)
+
+        ratio = [alpha] * batch_size   # alpha across the batch
+
+        next_token_logits = outputs[0][:, -1, :]  # batch * vocab
+        scores = postprocess_next_token_scores(  # batch * vocab
+            model,
+            scores=next_token_logits,
+            input_ids=input_ids,
+            no_repeat_ngram_size=no_repeat_ngram_size,
+            bad_words_ids=bad_words_ids,
+            cur_len=cur_len,
+            min_length=min_len,
+            max_length=max_len,
+            eos_token_id=eos_token_id,
+            repetition_penalty=repetition_penalty,
+            batch_size=batch_size,
+            num_beams=1,
+        )
+        if do_sample:
+            # Temperature (higher temperature => more likely to sample low probability tokens)
+            if temperature != 1.0:
+                scores = scores / temperature
+        logits_filter = top_k_top_p_filtering(scores, top_p=p)  # batch * vocab
+        top_p_mask = logits_filter.eq(-float("Inf"))  # batch * vocab
+
+        # bias sensitive tokens
+        top_k_tokens = []
+        for ii in range(batch_size):
+            tmp = (top_p_mask == False)[ii].nonzero().cpu().detach().numpy().tolist()  # batch tuple
+            top_k_tokens.append([x[0] for x in tmp])
+        probs_bias = F.softmax(logits_filter, dim=-1).cpu().detach().numpy()  # batch * vocab
+        for ii in range(batch_size):
+            bias = 0.
+            for t in top_k_tokens[ii]:
+                bias += embedding[int(t)].dot(gender_direction) / np.linalg.norm(embedding[int(t)]) \
+                        * probs_bias[ii][int(t)]
+            if bias <= bias_thre[0] and bias >= bias_thre[1]:
+                ratio[ii] = 1
+            else:
+                ratio[ii] = max(1 - abs(bias), 0.6)
+
+            # print(ratio[ii])
+
+        outputs_P = model.transformer(input_ids=input_ids)[0][:, -1].cpu().detach().numpy()  # transformer output: (2, batch, len, dim), output_P: (batch, dim)
+        outputs_P = np.multiply(np.array([1-ratio[ii] for ii in range(batch_size)]).reshape(-1, 1), outputs_P.dot(P)) + \
+                    np.multiply(np.array([ratio[ii] for ii in range(batch_size)]).reshape(-1, 1), outputs_P)
+        new_logits = outputs_P.dot(np.transpose(embedding))     # batch * vocab
+        new_logits = torch.from_numpy(new_logits).float()
+        new_logits = new_logits.to(device)
+        next_token_logits = new_logits
+
+        scores = postprocess_next_token_scores(
+            model,
+            scores=next_token_logits,
+            input_ids=input_ids,
+            no_repeat_ngram_size=no_repeat_ngram_size,
+            bad_words_ids=bad_words_ids,
+            cur_len=cur_len,
+            min_length=min_len,
+            max_length=max_len,
+            eos_token_id=eos_token_id,
+            repetition_penalty=repetition_penalty,
+            batch_size=batch_size,
+            num_beams=1,
+        )
+
+        if do_sample:
+            # Temperature (higher temperature => more likely to sample low probability tokens)
+            if temperature != 1.0:
+                scores = scores / temperature
+            # Top-p/top-k filtering
+            next_token_logscores = top_k_top_p_filtering(scores, top_k=top_k, top_p=top_p)  # batch * vocab
+            # Sample
+            probs = F.softmax(next_token_logscores, dim=-1)
+            next_token = torch.multinomial(probs, num_samples=1).squeeze(1)
+        else:
+            # Greedy decoding
+            next_token = torch.argmax(next_token_logits, dim=-1)
+
+        # update generations and finished sentences
+        if eos_token_id is not None:
+            # pad finished sentences if eos_token_id exist
+            tokens_to_add = next_token * unfinished_sents + (pad_token_id) * (1 - unfinished_sents)
+        else:
+            tokens_to_add = next_token
+
+        # add token and increase length by one
+        input_ids = torch.cat([input_ids, tokens_to_add.unsqueeze(-1)], dim=-1)
+        cur_len = cur_len + 1
+
+        if eos_token_id is not None:
+            eos_in_sents = tokens_to_add == eos_token_id
+            # if sentence is unfinished and the token to add is eos, sent_lengths is filled with current length
+            is_sents_unfinished_and_token_to_add_is_eos = unfinished_sents.mul(eos_in_sents.long()).bool()
+            sent_lengths.masked_fill_(is_sents_unfinished_and_token_to_add_is_eos, cur_len)
+            # unfinished_sents is set to zero if eos in sentence
+            unfinished_sents.mul_((~eos_in_sents).long())
+
+        # stop when there is a </s> in each sentence, or if we exceed the maximul length
+        if unfinished_sents.max() == 0:
+            break
+
+        # extend attention_mask for new generated input if only decoder
+        attention_mask = torch.cat([attention_mask, attention_mask.new_ones((attention_mask.shape[0], 1))],
+                                    dim=-1)
+
+    for ii in range(batch_size):
+        gen_sent = tokenizer.decode(input_ids.tolist()[ii], clean_up_tokenization_spaces=True)
+        # print(ii, gen_sent)
+        if '\n' in gen_sent:
+            gen_idx = gen_sent.index('\n')
+        else:
+            gen_idx = len(gen_sent)
+        generated_sentences.append(gen_sent[:gen_idx])
+
+    return generated_sentences#[0]
+        
 
 def generate_sentences(prompt, tokenizer, model, embedding, P, device, method, alpha):
     gender_direction = np.load("data/bias_subspace/gpt2_gender_direction.npy")
@@ -336,7 +485,7 @@ def generate_sentences(prompt, tokenizer, model, embedding, P, device, method, a
         # generated_sentence = np.array(generated_sentence)
         # np.savetxt(output_file + "avg_" + str(A[a]).replace('.','') + ".txt", generated_sentence, fmt="%s")
         generations[A[a]] = generated_sentence
-    return generations
+    return generations[0]
 
 
 if __name__ == '__main__':

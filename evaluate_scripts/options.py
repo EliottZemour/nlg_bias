@@ -19,9 +19,9 @@ def evaluate_options():
                         help='do sampling from the model')
     parser.add_argument("--temperature", default=1.2, type=float,
                         help='setting temperature of the model')
-    parser.add_argument("--top_p", default=0.95, type=float,
+    parser.add_argument("--top_p", default=0.9, type=float,
                         help='setting top_p of the model')
-    parser.add_argument("--top_k", default=40, type=int,
+    parser.add_argument("--top_k", default=None, type=int,
                         help='setting top_k of the model')
     parser.add_argument("--token", default='',
                         help="token for HuggingFace Model Hub if needed")
