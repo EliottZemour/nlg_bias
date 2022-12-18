@@ -167,7 +167,7 @@ pad_token_id = eos_token_id
 bias_thre = (0.15, -0.1)
 
 def generate_inlp(prompt, tokenizer, model, embedding, P, device, alpha=1.0, num_return_sequences=1, max_new_tokens=15, temperature=1.0, top_k=0, top_p=0.9):
-    gender_direction = np.load("/Users/eliott/Desktop/bias-free-nlg/a_inlp/data/bias_subspace/gpt2_gender_direction.npy")
+    gender_direction = np.load("../data/bias_subspace/gpt2_gender_direction.npy")
     batch_size = num_return_sequences
     temperature = 1.0
     top_k = 0
