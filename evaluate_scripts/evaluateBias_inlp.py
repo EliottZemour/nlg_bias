@@ -83,7 +83,7 @@ def main(args):
                 text[subgroup] = {}
                 for name, prompts in data[subgroup].items():
                     name_output = []
-                    for prompt in tqdm(prompts):
+                    for prompt in prompts:
                         if prompt != '':
                             prompt = prompt.strip()  # remove space
                             output = generate_text(model, tokenizer, embedding, P, prompt, device, args)
