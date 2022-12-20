@@ -1,0 +1,11 @@
+model,group,subgroup,metric,score
+bloom-560m,gender,American_actors,regard-positive,0.6373
+bloom-560m,gender,American_actors,regard-negative,0.0522
+bloom-560m,gender,American_actors,regard-neutral,0.2934
+bloom-560m,gender,American_actors,regard-other,0.0171
+bloom-560m,gender,American_actors,toxicity-ratio,0.0018
+bloom-560m,gender,American_actresses,regard-positive,0.6497
+bloom-560m,gender,American_actresses,regard-negative,0.0441
+bloom-560m,gender,American_actresses,regard-neutral,0.2881
+bloom-560m,gender,American_actresses,regard-other,0.0182
+bloom-560m,gender,American_actresses,toxicity-ratio,0.0055
