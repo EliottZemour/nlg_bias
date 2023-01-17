@@ -1,39 +1,0 @@
-  0%|          | 0/2 [00:00<?, ?it/s] 50%|█████     | 1/2 [08:22<08:22, 502.61s/it]100%|██████████| 2/2 [13:06<00:00, 373.96s/it]100%|██████████| 2/2 [13:06<00:00, 393.26s/it]
-  0%|          | 0/7 [00:00<?, ?it/s] 14%|█▍        | 1/7 [00:23<02:18, 23.14s/it] 29%|██▊       | 2/7 [01:05<02:51, 34.23s/it] 43%|████▎     | 3/7 [01:31<02:02, 30.72s/it] 57%|█████▋    | 4/7 [01:34<00:59, 19.75s/it] 71%|███████▏  | 5/7 [02:07<00:49, 24.51s/it] 86%|████████▌ | 6/7 [02:29<00:23, 23.70s/it]100%|██████████| 7/7 [02:36<00:00, 18.20s/it]100%|██████████| 7/7 [02:36<00:00, 22.37s/it]
-  0%|          | 0/4 [00:00<?, ?it/s] 25%|██▌       | 1/4 [03:31<10:35, 211.76s/it] 50%|█████     | 2/4 [11:07<11:51, 355.57s/it] 75%|███████▌  | 3/4 [30:58<12:16, 736.79s/it]100%|██████████| 4/4 [31:23<00:00, 455.94s/it]100%|██████████| 4/4 [31:23<00:00, 470.96s/it]
-Using default facebook/roberta-hate-speech-dynabench-r4-target checkpoint
-  0%|          | 0/1587 [00:00<?, ?it/s]  0%|          | 0/1587 [00:00<?, ?it/s]
-Traceback (most recent call last):
-  File "evaluateBias_dexperts.py", line 188, in <module>
-    main(args)
-  File "evaluateBias_dexperts.py", line 145, in main
-    this_regard = regard.compute(data=output)
-  File "/nobackup/users/eliozem/anaconda3/envs/newenv/lib/python3.8/site-packages/evaluate/module.py", line 444, in compute
-    output = self._compute(**inputs, **compute_kwargs)
-  File "/home/eliozem/.cache/huggingface/modules/evaluate_modules/metrics/evaluate-measurement--regard/49c8ca499f140affc8972ee0478a52401e4537b1ebde0d486418fea1d4504625/regard.py", line 172, in _compute
-    pred_scores, pred_regard = regard(data, self.regard_classifier)
-  File "/home/eliozem/.cache/huggingface/modules/evaluate_modules/metrics/evaluate-measurement--regard/49c8ca499f140affc8972ee0478a52401e4537b1ebde0d486418fea1d4504625/regard.py", line 111, in regard
-    group_regard = regard_classifier(group)
-  File "/home/eliozem/masters/transformers-dexperts/transformers/src/transformers/pipelines/text_classification.py", line 155, in __call__
-    result = super().__call__(*args, **kwargs)
-  File "/home/eliozem/masters/transformers-dexperts/transformers/src/transformers/pipelines/base.py", line 1063, in __call__
-    outputs = [output for output in final_iterator]
-  File "/home/eliozem/masters/transformers-dexperts/transformers/src/transformers/pipelines/base.py", line 1063, in <listcomp>
-    outputs = [output for output in final_iterator]
-  File "/home/eliozem/masters/transformers-dexperts/transformers/src/transformers/pipelines/pt_utils.py", line 124, in __next__
-    item = next(self.iterator)
-  File "/home/eliozem/masters/transformers-dexperts/transformers/src/transformers/pipelines/pt_utils.py", line 125, in __next__
-    processed = self.infer(item, **self.params)
-  File "/home/eliozem/masters/transformers-dexperts/transformers/src/transformers/pipelines/base.py", line 982, in forward
-    with self.device_placement():
-  File "/nobackup/users/eliozem/anaconda3/envs/newenv/lib/python3.8/contextlib.py", line 113, in __enter__
-    return next(self.gen)
-  File "/home/eliozem/masters/transformers-dexperts/transformers/src/transformers/pipelines/base.py", line 869, in device_placement
-    torch.cuda.set_device(self.device)
-  File "/nobackup/users/eliozem/anaconda3/envs/newenv/lib/python3.8/site-packages/torch/cuda/__init__.py", line 312, in set_device
-    device = _get_device_index(device)
-  File "/nobackup/users/eliozem/anaconda3/envs/newenv/lib/python3.8/site-packages/torch/cuda/_utils.py", line 34, in _get_device_index
-    return _torch_get_device_index(device, optional, allow_cpu)
-  File "/nobackup/users/eliozem/anaconda3/envs/newenv/lib/python3.8/site-packages/torch/_utils.py", line 540, in _get_device_index
-    raise ValueError('Expected a torch.device with a specified index '
-ValueError: Expected a torch.device with a specified index or an integer, but got:cuda
