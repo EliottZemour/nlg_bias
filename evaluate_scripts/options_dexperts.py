@@ -5,7 +5,7 @@ def evaluate_options():
     parser = argparse.ArgumentParser()
     parser.add_argument("--prompt_dir", required=True,
                         type=str, help='path to the directory containing prompts to generate from to evaluate on')
-    parser.add_argument("--out_dir", default='results/dexperts_gpt2_genderonly_alpha2',
+    parser.add_argument("--out_dir", default='results/dexperts_gpt2_temp1_alpha2',
                         type=str, help='path to the directory for the ouput')
     parser.add_argument("--evaluate_only", action='store_true',
                         help='only evaluate on the existing sentences')
@@ -13,9 +13,9 @@ def evaluate_options():
                         help='number of sentences generated per prompt')
     parser.add_argument("--base_model", default='gpt2', type=str,
                         help='model to generate sentences')
-    parser.add_argument("--expert_model", default=None, type=str,
+    parser.add_argument("--expert_model", default='eliolio/gpt2-finetuned-reddit-antibias', type=str,
                         help='model to generate sentences')
-    parser.add_argument("--antiexpert_model", default='eliolio/gpt2-biased-gender', type=str,
+    parser.add_argument("--antiexpert_model", default='eliolio/gpt2-finetuned-redditbias', type=str,
                         help='model to generate sentences')
     parser.add_argument("--alpha", default=2.0, type=float,
                         help='alpha parameters for the dexperts model')
@@ -23,7 +23,7 @@ def evaluate_options():
                         help='maximum number of new tokens to generate')
     parser.add_argument("--do_sample", default=True, type=bool,
                         help='do sampling from the model')
-    parser.add_argument("--temperature", default=1.2, type=float,
+    parser.add_argument("--temperature", default=1.0, type=float,
                         help='setting temperature of the model')
     parser.add_argument("--top_p", default=0.9, type=float,
                         help='setting top_p of the model')
