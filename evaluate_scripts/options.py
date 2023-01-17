@@ -17,7 +17,7 @@ def evaluate_options():
                         help='maximum number of new tokens to generate')
     parser.add_argument("--do_sample", default=True, type=bool,
                         help='do sampling from the model')
-    parser.add_argument("--temperature", default=1.2, type=float,
+    parser.add_argument("--temperature", default=1.0, type=float,
                         help='setting temperature of the model')
     parser.add_argument("--top_p", default=0.9, type=float,
                         help='setting top_p of the model')
