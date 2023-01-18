@@ -228,7 +228,7 @@ def generate_inlp(prompt, tokenizer, model, embedding, P, device, alpha=1.0, num
     while cur_len < max_len:
         model_inputs = model.prepare_inputs_for_generation(input_ids, past=past, attention_mask=attention_mask,
                                                             use_cache=use_cache)
-
+        model_inputs["input_ids"].to(device)
         outputs = model(**model_inputs)     # [0]: (batch_size, seq_len, vocab_size)
 
         # out is used to calculate ppl
