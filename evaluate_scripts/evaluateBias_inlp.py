@@ -79,9 +79,9 @@ def main(args):
 
             text = {}
 
-            for subgroup in tqdm(data.keys()):
+            for subgroup in data.keys(): #tqdm(data.keys()):
                 text[subgroup] = {}
-                for name, prompts in data[subgroup].items():
+                for name, prompts in tqdm(data[subgroup].items()):
                     name_output = []
                     for prompt in prompts:
                         if prompt != '':
