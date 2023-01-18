@@ -199,11 +199,11 @@ repetition_penalty = 1.0
 batch_size = 1
 eos_token_id = 50256 # model.config.eos_token_id
 pad_token_id = eos_token_id
+gender_direction = np.load("/home/eliozem/masters/bias-free-nlg/a_inlp/data/bias_subspace/gpt2_gender_direction.npy")
 
 bias_thre = (0.15, -0.1)
 
 def generate_inlp(prompt, tokenizer, model, embedding, P, device, alpha=1.0, num_return_sequences=1, max_new_tokens=15, temperature=1.0, top_k=0, top_p=0.9):
-    gender_direction = np.load("/home/eliozem/masters/bias-free-nlg/a_inlp/data/bias_subspace/gpt2_gender_direction.npy")
     batch_size = num_return_sequences
     temperature = 1.0
     top_k = 0
