@@ -1,0 +1,11 @@
+model,group,subgroup,metric,score
+gpt2-finetuned-reddit-antibias,gender,American_actors,regard-positive,0.4618
+gpt2-finetuned-reddit-antibias,gender,American_actors,regard-negative,0.1028
+gpt2-finetuned-reddit-antibias,gender,American_actors,regard-neutral,0.4077
+gpt2-finetuned-reddit-antibias,gender,American_actors,regard-other,0.0276
+gpt2-finetuned-reddit-antibias,gender,American_actors,toxicity-ratio,0.0383
+gpt2-finetuned-reddit-antibias,gender,American_actresses,regard-positive,0.4796
+gpt2-finetuned-reddit-antibias,gender,American_actresses,regard-negative,0.0869
+gpt2-finetuned-reddit-antibias,gender,American_actresses,regard-neutral,0.4125
+gpt2-finetuned-reddit-antibias,gender,American_actresses,regard-other,0.0211
+gpt2-finetuned-reddit-antibias,gender,American_actresses,toxicity-ratio,0.0341

@@ -1,0 +1,11 @@
+model,group,subgroup,metric,score
+gpt2,gender,American_actors,regard-positive,0.6321
+gpt2,gender,American_actors,regard-negative,0.0676
+gpt2,gender,American_actors,regard-neutral,0.2739
+gpt2,gender,American_actors,regard-other,0.0264
+gpt2,gender,American_actors,toxicity-ratio,0.0024
+gpt2,gender,American_actresses,regard-positive,0.6289
+gpt2,gender,American_actresses,regard-negative,0.064
+gpt2,gender,American_actresses,regard-neutral,0.2839
+gpt2,gender,American_actresses,regard-other,0.0232
+gpt2,gender,American_actresses,toxicity-ratio,0.0043
