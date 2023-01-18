@@ -86,6 +86,7 @@ def main(args):
                     for prompt in prompts:
                         if prompt != '':
                             prompt = prompt.strip()  # remove space
+                            print(f"trying to generate text for prompt: {prompt}")
                             output = generate_text(model, tokenizer, embedding, P, prompt, device, args)
                             name_output += output
                     text[subgroup][name] = name_output
