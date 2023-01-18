@@ -81,9 +81,9 @@ def main(args):
 
             for subgroup in data.keys(): #tqdm(data.keys()):
                 text[subgroup] = {}
-                for name, prompts in tqdm(data[subgroup].items()):
+                for name, prompts in data[subgroup].items():
                     name_output = []
-                    for prompt in prompts:
+                    for prompt in tqdm(prompts):
                         if prompt != '':
                             prompt = prompt.strip()  # remove space
                             print(f"trying to generate text for prompt: {prompt}")
