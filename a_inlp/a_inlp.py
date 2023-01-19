@@ -199,7 +199,8 @@ repetition_penalty = 1.0
 batch_size = 1
 eos_token_id = 50256 # model.config.eos_token_id
 pad_token_id = eos_token_id
-gender_direction = np.load("/home/eliozem/masters/bias-free-nlg/a_inlp/data/bias_subspace/gpt2_gender_direction.npy")
+# gender_direction = np.load("/home/eliozem/masters/bias-free-nlg/a_inlp/data/bias_subspace/gpt2_gender_direction.npy")
+gender_direction = np.load("/Users/eliott/Desktop/bias-free-nlg/a_inlp/data/bias_subspace/gpt2_gender_direction.npy")
 
 bias_thre = (0.15, -0.1)
 

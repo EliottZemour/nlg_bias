@@ -2,3 +2,4 @@ __pycache__/
 stereoset/__pycache__/
 .vscode/
 .DS_Store
+zold/*
