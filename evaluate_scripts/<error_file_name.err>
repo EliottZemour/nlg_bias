@@ -1,0 +1,35 @@
+
+CommandNotFoundError: Your shell has not been properly configured to use 'conda activate'.
+To initialize your shell, run
+
+    $ conda init <SHELL_NAME>
+
+Currently supported shells are:
+  - bash
+  - fish
+  - tcsh
+  - xonsh
+  - zsh
+  - powershell
+
+See 'conda init --help' for more information and options.
+
+IMPORTANT: You may need to close and restart your shell after running 'conda init'.
+
+
+Traceback (most recent call last):
+  File "/home/eliozem/masters/bias-free-nlg/evaluate_scripts/evaluateBias_dexperts.py", line 1, in <module>
+    from transformers import AutoTokenizer, AutoModelForCausalLM, GPT2Tokenizer, GPT2Model, pipeline, set_seed
+ModuleNotFoundError: No module named 'transformers'
+Traceback (most recent call last):
+  File "/home/eliozem/masters/bias-free-nlg/evaluate_scripts/evaluateBias_dexperts.py", line 1, in <module>
+Traceback (most recent call last):
+  File "/home/eliozem/masters/bias-free-nlg/evaluate_scripts/evaluateBias_dexperts.py", line 1, in <module>
+    from transformers import AutoTokenizer, AutoModelForCausalLM, GPT2Tokenizer, GPT2Model, pipeline, set_seed
+ModuleNotFoundError: No module named 'transformers'
+    from transformers import AutoTokenizer, AutoModelForCausalLM, GPT2Tokenizer, GPT2Model, pipeline, set_seed
+ModuleNotFoundError: No module named 'transformers'
+Traceback (most recent call last):
+  File "/home/eliozem/masters/bias-free-nlg/evaluate_scripts/evaluateBias_dexperts.py", line 1, in <module>
+    from transformers import AutoTokenizer, AutoModelForCausalLM, GPT2Tokenizer, GPT2Model, pipeline, set_seed
+ModuleNotFoundError: No module named 'transformers'
