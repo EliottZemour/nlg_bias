@@ -1,21 +1,21 @@
 import json
 import os
-from random import shuffle
+# from random import shuffle
 import pandas as pd
 import numpy as np
 import torch
-import transformers
+# import transformers
 from colorama import Back, Fore, Style, init
-from torch.utils.data import DataLoader, Dataset
+# from torch.utils.data import DataLoader, Dataset
 from tqdm import tqdm
-import matplotlib.pyplot as plt
-from glob import glob
+# import matplotlib.pyplot as plt
+# from glob import glob
 from collections import Counter, OrderedDict
-from argparse import ArgumentParser
+# from argparse import ArgumentParser
 from collections import defaultdict
 import stereoset.dataloader as dataloader
-from stereoset.intersentence_loader import IntersentenceDataset
-from transformers import AutoModelForCausalLM, AutoTokenizer
+# from stereoset.intersentence_loader import IntersentenceDataset
+# from transformers import AutoModelForCausalLM, AutoTokenizer
 from dexperts import DExperts
 import argparse
 from tqdm import tqdm
@@ -244,7 +244,7 @@ def main():
         output_file = os.path.join("stereoset", args.save_json)
         with open(output_file, "w+") as f:
                 json.dump(overall, f, indent=2)
-                
+
     score_evaluator.pretty_print(overall)
 
     
