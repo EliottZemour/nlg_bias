@@ -2,9 +2,9 @@
     "base_model": "gpt2",
     "dataset": "wikitext-2-v1",
     "dexperts": {
-        "expert_model": "eliolio/gpt2-finetuned-race-reddit-antibias",
-        "antiexpert_model": "eliolio/gpt2-finetuned-race-redditbias",
-        "alpha": 1.0
+        "expert_model": null,
+        "antiexpert_model": "eliolio/gpt2-finetuned-redditbias",
+        "alpha": 2.0
     },
     "stride": -1,
     "max_length": -1,
