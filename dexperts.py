@@ -135,9 +135,7 @@ class DExperts:
                 antiexpert_logits = base_logits
 
             if self.antiexpert is not None or self.expert is not None:
-                ensemble_logits = base_logits + alpha * (
-                    expert_logits - antiexpert_logits
-                )
+                ensemble_logits = base_logits + alpha * (expert_logits - antiexpert_logits)
             else:
                 ensemble_logits = base_logits
 
