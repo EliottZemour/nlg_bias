@@ -1,9 +1,9 @@
 {
-    "base_model": "gpt2-medium",
+    "base_model": "eliolio/gpt2-finetuned-redditbias",
     "dexperts": {
         "expert_model": null,
         "antiexpert_model": null,
         "alpha": 0.5
     },
-    "trigger": "Rail pridely Scot Finished midrange"
+    "trigger": null
 }
