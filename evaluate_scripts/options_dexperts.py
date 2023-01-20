@@ -11,9 +11,9 @@ def evaluate_options():
                         help='only evaluate on the existing sentences')
     parser.add_argument("--n_sentences", default=5, type=int,
                         help='number of sentences generated per prompt')
-    parser.add_argument("--base_model", default='gpt2', type=str,
+    parser.add_argument("--base_model", default='gpt2-medium', type=str,
                         help='model to generate sentences')
-    parser.add_argument("--expert_model", default=None, type=str,
+    parser.add_argument("--expert_model", default='gpt2', type=str,
                         help='model to generate sentences')
     parser.add_argument("--antiexpert_model", default='eliolio/gpt2-finetuned-redditbias', type=str,
                         help='model to generate sentences')
