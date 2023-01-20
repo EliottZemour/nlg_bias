@@ -1,0 +1,8 @@
+{
+    "base_model": "gpt2",
+    "dexperts": {
+        "expert_model": null,
+        "antiexpert_model": null,
+        "alpha": 0.5
+    }
+}
