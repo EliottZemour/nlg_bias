@@ -13,9 +13,9 @@ def evaluate_options():
                         help='number of sentences generated per prompt')
     parser.add_argument("--base_model", default='gpt2-medium', type=str,
                         help='model to generate sentences')
-    parser.add_argument("--expert_model", default='eliolio/gpt2-finetuned-gender-reddit-antibias', type=str,
+    parser.add_argument("--expert_model", default='eliolio/gpt2-finetuned-race-reddit-antibias', type=str,
                         help='model to generate sentences')
-    parser.add_argument("--antiexpert_model", default='eliolio/gpt2-finetuned-gender-redditbias', type=str,
+    parser.add_argument("--antiexpert_model", default='eliolio/gpt2-finetuned-race-redditbias', type=str,
                         help='model to generate sentences')
     parser.add_argument("--alpha", default=1.0, type=float,
                         help='alpha parameters for the dexperts model')
