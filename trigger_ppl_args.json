@@ -1,0 +1,12 @@
+{
+    "base_model": "gpt2-medium",
+    "dataset": "wikitext-2-v1",
+    "dexperts": {
+        "expert_model": null,
+        "antiexpert_model": null,
+        "alpha": 2.0
+    },
+    "stride": -1,
+    "max_length": -1,
+    "max_length_pattern": 32
+}
