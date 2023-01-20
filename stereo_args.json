@@ -1,9 +1,9 @@
 {
-    "base_model": "gpt2",
+    "base_model": "gpt2-medium",
     "dexperts": {
         "expert_model": null,
         "antiexpert_model": null,
         "alpha": 0.5
     },
-    "trigger": "MSN Canaveral龍喚士龍喚士 TAMADRAoried"
+    "trigger": "Rail pridely Scot Finished midrange"
 }
