@@ -182,6 +182,15 @@ def main():
     )
     device = dexperts.device
 
+    if args.trigger:
+        dexperts = DExperts(
+            base_model=args.base_model,
+            # expert_model=args.dexperts.get('expert_model', None),
+            # antiexpert_model=args.dexperts.get('antiexpert_model', None),
+            tokenizer=args.base_model,
+            alpha=alpha,
+        )
+
     def evaluate_intrasentence(model_name_or_path, input_file, alpha=2.0, device="cpu"):
 
     # print(f"{Fore.LIGHTBLUE_EX}Loading model and tokenizer...{Style.RESET_ALL}")
@@ -206,7 +215,10 @@ def main():
             for sentence in cluster.sentences:
                 probabilities = {}
                 # tokens = tokenizer.encode(sentence.sentence)
-                dexperts_output = dexperts(sentence.sentence, alpha=alpha)
+                if args.trigger:
+                    dexperts_output = dexperts(args.trigger+sentence.sentence, alpha=alpha)
+                else:
+                    dexperts_output = dexperts(sentence.sentence, alpha=alpha)
                 logits = dexperts_output['logits']
                 tokens = dexperts_output['encoded_text'][0]
                 joint_sentence_probability = [initial_token_probabilities[0, 0, tokens[0]].item()]
