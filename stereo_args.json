@@ -1,9 +1,9 @@
 {
-    "base_model": "eliolio/gpt2-finetuned-race-reddit-antibias",
+    "base_model": "gpt2-medium",
     "dexperts": {
-        "expert_model": null,
-        "antiexpert_model": null,
-        "alpha": 0.5
+        "expert_model": "gpt2",
+        "antiexpert_model": "eliolio/gpt2-finetuned-redditbias",
+        "alpha": 1.0
     },
     "trigger": null
 }
