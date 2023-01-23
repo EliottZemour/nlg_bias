@@ -1,5 +1,5 @@
 {
-    "base_model": "eliolio/gpt2-finetuned-gender-reddit-antibias",
+    "base_model": "eliolio/gpt2-finetuned-race-reddit-antibias",
     "dexperts": {
         "expert_model": null,
         "antiexpert_model": null,
