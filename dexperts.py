@@ -16,8 +16,8 @@ class DExperts:
     def __init__(
         self,
         base_model: Union[str, Path, AutoModelForCausalLM],
-        antiexpert_model: Union[str, Path, AutoModelForCausalLM] = None,
-        expert_model: Union[str, Path, AutoModelForCausalLM] = None,
+        antiexpert_model: Union[str, Path, AutoModelForCausalLM, None] = None,
+        expert_model: Union[str, Path, AutoModelForCausalLM, None] = None,
         tokenizer: str = "gpt2",
         alpha: float = 2.0,
         seed: int = 42,
