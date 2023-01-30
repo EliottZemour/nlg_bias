@@ -1,0 +1,15 @@
+{
+  "base_model": "gpt2-medium",
+  "dataset": "wikitext-2-v1",
+  "dexperts": {
+    "expert_model": "eliolio/gpt2-finetuned-religion-reddit-antibias",
+    "antiexpert_model": "eliolio/gpt2-finetuned-religion-redditbias",
+    "alpha": 1.0
+  },
+  "stride": -1,
+  "max_length": -1,
+  "max_length_pattern": 32,
+  "save_json": "perplexity/dexperts_med_religion_alpha=1.json",
+  "load_json": "perplexity_args.json",
+  "perplexity": 25.020030975341797
+}
