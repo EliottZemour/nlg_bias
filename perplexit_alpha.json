@@ -1,0 +1,27 @@
+{
+  "base_model": "gpt2-medium",
+  "dataset": "wikitext-2-v1",
+  "dexperts": {
+    "expert_model": "eliolio/gpt2-finetuned-reddit-antibias",
+    "antiexpert_model": "eliolio/gpt2-finetuned-redditbias",
+    "alpha": 0.001
+  },
+  "stride": -1,
+  "max_length": -1,
+  "max_length_pattern": 32,
+  "save_json": "perplexit_alpha.json",
+  "load_json": "perplexity_args.json",
+  "perplexity": {
+    "0.0": 19.1007080078125,
+    "0.5": 19.318647384643555,
+    "1.0": 20.11615562438965,
+    "1.5": 21.70310401916504,
+    "2.0": 24.638063430786133,
+    "2.5": 30.25844383239746,
+    "3.0": 41.68815231323242,
+    "3.5": 66.49269104003906,
+    "4.0": 124.37845611572266,
+    "4.5": 270.7081604003906,
+    "5.0": 672.0643310546875
+  }
+}
