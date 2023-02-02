@@ -1,8 +1,8 @@
 {
     "base_model": "gpt2",
     "dexperts": {
-        "expert_model": "eliolio/gpt2-finetuned-religion-reddit-antibias",
-        "antiexpert_model": "eliolio/gpt2-finetuned-religion-redditbias",
+        "expert_model": "eliolio/gpt2-finetuned-reddit-antibias",
+        "antiexpert_model": "gpt2",
         "alpha": 1.0
     },
     "trigger": null

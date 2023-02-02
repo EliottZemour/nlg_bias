@@ -23,7 +23,12 @@ class DExperts:
         seed: int = 42,
     ):
         # Set up device
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        if torch.cuda.is_available():
+            self.device = torch.device("cuda")
+        # elif torch.backends.mps.is_available():
+        #     self.device = torch.device("mps")
+        else:
+            self.device = torch.device("cpu")
         set_seed(seed)
 
         self.base_model = AutoModelForCausalLM.from_pretrained(base_model).to(
