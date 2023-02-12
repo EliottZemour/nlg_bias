@@ -242,7 +242,7 @@ def main():
         return {model_name_or_path: predictions}
 
 
-    preds = evaluate_intrasentence('gpt2', 'stereoset/dev.json', alpha=1.0)
+    preds = evaluate_intrasentence('gpt2', 'stereoset/dev.json', alpha=alpha)
 
     if args.save_json:
         output_file = os.path.join("stereoset/preds", args.save_json)
