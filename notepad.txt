@@ -1,3 +1,0 @@
-perplexity/results_dexperts_base_antionly.json
-
-perplexity/results_dexperts_base_race.json
