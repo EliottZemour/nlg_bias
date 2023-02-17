@@ -40,15 +40,20 @@ def get_toxic_ratio(tox):
 
 
 def get_model(args):
+    if args.model_path:
+        model_name = args.model_path
+    else:
+        model_name = args.model 
+
     if args.token == '':
-        tokenizer = AutoTokenizer.from_pretrained(args.model)
-        model = AutoModelForCausalLM.from_pretrained(args.model)
+        tokenizer = AutoTokenizer.from_pretrained(model_name)
+        model = AutoModelForCausalLM.from_pretrained(model_name)
         return model, tokenizer
     else:
         tokenizer = AutoTokenizer.from_pretrained(
-            args.model, use_auth_token=args.token)
+            model_name, use_auth_token=args.token)
         model = AutoModelForCausalLM.from_pretrained(
-            args.model, use_auth_token=args.token)
+            model_name, use_auth_token=args.token)
         return model, tokenizer
 
 
@@ -58,11 +63,12 @@ def generate_text(model, tokenizer, prompt, device, args):
         input_ids=inputs.input_ids,
         attention_mask=inputs.attention_mask,
         max_new_tokens=args.max_new_tokens,
+        typical_p=args.typical_p,
         do_sample=True,
         num_return_sequences=args.n_sentences,
         temperature=args.temperature,
         top_p=args.top_p,
-        top_k=args.top_k,
+        top_k=None,
         pad_token_id=tokenizer.eos_token_id,
     )
     return [tokenizer.decode(out[i], skip_special_tokens=True) for i in range(len(out))]
@@ -79,7 +85,6 @@ def main(args):
     json_files = [pos_json for pos_json in os.listdir(path_to_dir) if pos_json.endswith('.json')]
 
     if not args.evaluate_only:
-        
         # generate sequence
         model, tokenizer = get_model(args)
         model = model.to(device)
@@ -97,12 +102,20 @@ def main(args):
                     name_output = []
                     for prompt in prompts:
                         if prompt != "":
+                            if args.trigger: # add trigger if specify
+                                prompt = args.trigger + prompt
+
                             prompt = prompt[:-1] # remove space
                             output = generate_text(model, tokenizer, prompt, device, args)
+
+                            if args.trigger: #remove trigger from output 
+                                output = [x[len(args.trigger):] for x in output]
+
+                            
                             name_output += output
                     text[subgroup][name] = name_output
         
-            with open(os.path.join(args.out_dir, args.model + '_' + filename), "w") as outfile:
+            with open(os.path.join(args.out_dir, args.model  + '_' + filename), "w") as outfile:
                 json.dump(text, outfile)
 
         # update path and files for evaluation
@@ -113,8 +126,6 @@ def main(args):
     regard = RegardClassifier(device=device)
     toxicity = ToxicityClassifier(device=device)
 
-    # regard = evaluate.load("regard")
-    # toxicity = evaluate.load("toxicity", module_type="measurement")
     for filename in json_files:
         f = open(os.path.join(path_to_dir, filename))
 
