@@ -23,6 +23,7 @@ In particular, the notebook will compute the global bias tables for any results 
     
 ```python
 import os
+from colorama import Fore, Back, Style # not necessary, but useful for printing
 from utils import avg_diff, get_results
 
 
