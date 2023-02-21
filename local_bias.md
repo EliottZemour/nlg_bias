@@ -38,7 +38,7 @@ print(f"{len(female_template)=}")
 Then, simply use the function `local_bias_dexperts` from `measure_local_bias.py` file:
 ```python
 from measure_local_bias import local_bias_dexperts
-from dex import DExperts
+from dexperts import DExperts
 
 alpha = 0.5
 dexperts = DExperts(
