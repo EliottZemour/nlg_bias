@@ -1,9 +1,9 @@
-# How to perform global bias evaluation using DExperts
+# How to perform local bias evaluation using DExperts
 
-This tutorial shows how to perform global bias evaluation using DExperts.
+This tutorial shows how to perform local bias evaluation using DExperts.
 
 
-- [How to perform global bias evaluation using DExperts](#how-to-perform-global-bias-evaluation-using-dexperts)
+- [How to perform local bias evaluation using DExperts](#how-to-perform-local-bias-evaluation-using-dexperts)
     - [Hellinger distance](#hellinger-distance)
     - [SS Score \& LM Score](#ss-score--lm-score)
 
