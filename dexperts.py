@@ -21,7 +21,9 @@ class DExperts:
         tokenizer: str = "gpt2",
         alpha: float = 2.0,
         seed: int = 42,
+        mode: str = "linear"
     ):
+        token = "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"
         # Set up device
         if torch.cuda.is_available():
             self.device = torch.device("cuda")
@@ -36,13 +38,13 @@ class DExperts:
         )
         if antiexpert_model:
             self.antiexpert = AutoModelForCausalLM.from_pretrained(
-                antiexpert_model, use_auth_token=True
+                antiexpert_model, use_auth_token=token
             ).to(self.device)
         else:
             self.antiexpert = None
         if expert_model:
             self.expert = AutoModelForCausalLM.from_pretrained(
-                expert_model, use_auth_token=True
+                expert_model, use_auth_token=token
             ).to(self.device)
         else:
             self.expert = None
@@ -52,6 +54,7 @@ class DExperts:
         assert self.tokenizer.eos_token_id == self.tokenizer.pad_token_id
 
         self.alpha = alpha
+        self.mode = mode
         self.logits_processor = LogitsProcessorList(
             [
                 DexpertsLogitsWarper(
@@ -59,6 +62,7 @@ class DExperts:
                     anti_expert_model=antiexpert_model,
                     alpha=self.alpha,
                     device=self.device,
+                    mode=self.mode
                 )
             ]
         )
@@ -138,10 +142,77 @@ class DExperts:
                 antiexpert_logits = self.antiexpert(encodings_dict).logits
             else:
                 antiexpert_logits = base_logits
-
+            
+            #pre-softmax 
             if self.antiexpert is not None or self.expert is not None:
-                ensemble_logits = base_logits + alpha * (expert_logits - antiexpert_logits)
+                if self.mode == "linear":
+                    ensemble_logits = base_logits + alpha * (expert_logits - antiexpert_logits)
+                elif self.mode == "bayes":                   
+                    combined = torch.stack((expert_logits, antiexpert_logits), 3)
+                    combined = torch.logsumexp(combined, 3) # p_expert + p_anti
+                    logp_desired_t = expert_logits - combined        
+                    ensemble_logits = base_logits + logp_desired_t
+                    
             else:
                 ensemble_logits = base_logits
 
         return ensemble_logits
+
+    
+#       gedi_outputs = gedi_model(**inputs)
+#                 if gedi_past is None:
+#                     if gedi_outputs[0].shape[1]>1:
+#                         old_logits = torch.log_softmax(gedi_outputs[0][:, :-1, :],-1)
+
+#                         shift_logits = gedi_outputs[0][..., :-1, :].contiguous()
+#                         shift_labels = seq_batched[..., 1:].contiguous()
+#                         loss_fct = torch.nn.CrossEntropyLoss(reduction="none")
+#                         logits_r  = -1*loss_fct(shift_logits.view(-1, shift_logits.size(-1)), shift_labels.view(-1))
+#                         logits_r = logits_r.view(seq_batched.shape[0], -1)
+
+#                         seq_len = logits_r.shape[1]
+
+#                         logits_r = torch.sum(logits_r,1)
+
+
+#                         logits_pos,logits_neg = torch.split(logits_r/seq_len,input_ids.shape[0])
+
+
+#                         logits0 = torch.stack((logits_pos,logits_neg),1)
+
+#                         if "logit_scale" in dir(gedi_model):
+#                             logits0 = gedi_model.logit_scale*logits0
+
+#                         if "bias" in dir(gedi_model):
+#                             logits0 = logits0 + gedi_model.bias
+#                         if not (class_bias==0):
+#                             logits0[:,0] += class_bias
+
+
+#                         logp_desired = torch.log_softmax(logits0,-1)[:,0]
+#                         logp_undesired = torch.log_softmax(logits0,-1)[:,1]
+#                     else:
+#                         seq_len=0
+#                         logp_desired = (torch.zeros(input_ids.shape[0]) + torch.log(torch.tensor(0.5))).to(input_ids.device)
+#                         logp_undesired = (torch.zeros(input_ids.shape[0]) + torch.log(torch.tensor(0.5))).to(input_ids.device)
+#                         logits_r = torch.zeros(input_ids.shape[0]*2).to(input_ids.device)
+
+
+#                 seq_len= seq_len+1
+#                 gedi_logits= (torch.log_softmax(gedi_outputs[0][:, -1, :],-1)+logits_r.unsqueeze(1))
+
+#                 logits_pos,logits_neg = torch.split(gedi_logits/seq_len,input_ids.shape[0])
+#                 logits = torch.stack((logits_pos,logits_neg),2)
+#                 if "logit_scale" in dir(gedi_model):
+#                     logits = gedi_model.logit_scale*logits
+
+#                 if "bias" in dir(gedi_model):
+#                     logits = logits + gedi_model.bias
+
+#                 if not class_bias == 0:
+#                     logits[:,:,0] += class_bias
+
+#                 logp_desired_t = torch.log_softmax(logits,-1)[:,:,0]
+#                 logp_undesired_t = torch.log_softmax(logits,-1)[:,:,1]
+
+#                 next_token_logits = torch.log_softmax(1*next_token_logits,-1) + disc_weight*(logp_desired_t) #+delta_capped82058721
