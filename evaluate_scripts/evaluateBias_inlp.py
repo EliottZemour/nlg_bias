@@ -91,7 +91,7 @@ def main(args):
                             name_output += output
                     text[subgroup][name] = name_output
         
-            with open(os.path.join(args.out_dir, args.model + '_' + filename), "w") as outfile:
+            with open(os.path.join(args.out_dir, 'a_inlp' + args.model + '_' + filename), "w") as outfile:
                 json.dump(text, outfile)
 
         # update path and files for evaluation

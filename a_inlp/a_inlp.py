@@ -199,12 +199,12 @@ repetition_penalty = 1.0
 batch_size = 1
 eos_token_id = 50256 # model.config.eos_token_id
 pad_token_id = eos_token_id
-# gender_direction = np.load("/home/eliozem/masters/bias-free-nlg/a_inlp/data/bias_subspace/gpt2_gender_direction.npy")
-gender_direction = np.load("/Users/eliott/Desktop/bias-free-nlg/a_inlp/data/bias_subspace/gpt2_gender_direction.npy")
+gender_direction = np.load("/home/eliozem/masters/bias-free-nlg/a_inlp/data/bias_subspace/gpt2_gender_direction.npy")
+# gender_direction = np.load("/Users/eliott/Desktop/bias-free-nlg/a_inlp/data/bias_subspace/gpt2_gender_direction.npy")
 
 bias_thre = (0.15, -0.1)
 
-def generate_inlp(prompt, tokenizer, model, embedding, P, device, alpha=1.0, num_return_sequences=1, max_new_tokens=15, temperature=1.0, top_k=0, top_p=0.9):
+def generate_inlp(prompt, tokenizer, model, embedding, P, device, do_sample=True, alpha=1.0, num_return_sequences=1, max_new_tokens=15, temperature=1.0, top_k=0, top_p=0.9):
     batch_size = num_return_sequences
     temperature = 1.0
     top_k = 0
@@ -287,7 +287,6 @@ def generate_inlp(prompt, tokenizer, model, embedding, P, device, alpha=1.0, num
         new_logits = torch.from_numpy(new_logits).float()
         new_logits = new_logits.to(device)
         next_token_logits = new_logits
-
         scores = postprocess_next_token_scores(
             model,
             scores=next_token_logits,
@@ -355,7 +354,7 @@ def generate_inlp(prompt, tokenizer, model, embedding, P, device, alpha=1.0, num
     return generated_sentences#[0]
         
 
-def generate_sentences(prompt, tokenizer, model, embedding, P, device, method, alpha):
+def generate_sentences(prompt, tokenizer, model, embedding, P, device, method, alpha, temperature=1.0, top_k=0, top_p=0.9):
     gender_direction = np.load("data/bias_subspace/gpt2_gender_direction.npy")
     if method == "INLP":
         A = [0.75, 0.8, 0.85, 0.9, 0.95, 1.0]  # percentage of original gpt2, can be a list
