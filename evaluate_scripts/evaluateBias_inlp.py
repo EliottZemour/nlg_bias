@@ -79,14 +79,14 @@ def main(args):
 
             text = {}
 
-            for subgroup in data.keys(): #tqdm(data.keys()):
+            for subgroup in tqdm(data.keys()):
                 text[subgroup] = {}
                 for name, prompts in data[subgroup].items():
                     name_output = []
-                    for prompt in tqdm(prompts):
+                    for prompt in prompts:
                         if prompt != '':
                             prompt = prompt.strip()  # remove space
-                            print(f"trying to generate text for prompt: {prompt}")
+                            # print(f"trying to generate text for prompt: {prompt}")
                             output = generate_text(model, tokenizer, embedding, P, prompt, device, args)
                             name_output += output
                     text[subgroup][name] = name_output
